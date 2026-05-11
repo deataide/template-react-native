@@ -1,50 +1,282 @@
-# Welcome to your Expo app 👋
+# Expo Native Template
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Template moderno para desenvolvimento **React Native + Expo** com arquitetura escalável baseada em **Feature-Driven Design**, preparado para aplicações reais de produção.
 
-## Get started
+Este projeto foi criado para eliminar boilerplate repetitivo e já entregar uma base **profissional, organizada e performática**.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Tecnologias
 
-2. Start the app
+### Core
 
-   ```bash
-   npx expo start
-   ```
+* **Expo SDK 54**
+* **React 19**
+* **React Native 0.81**
+* **Expo Router (File-based routing)**
 
-In the output, you'll find options to open the app in a
+Compatível com:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+* Android
+* iOS
+* Web
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+### Gerenciamento de Estado
 
-When you're ready, run:
+| Tipo de Estado        | Tecnologia     |
+| --------------------- | -------------- |
+| Dados do backend      | TanStack Query |
+| estado local          | Zustand        |
 
-```bash
-npm run reset-project
+Separação clara entre **Server State** e **Client State**.
+
+---
+
+### UI & Estilização
+
+* NativeWind (Tailwind CSS)
+* Dark / Light Theme Ready
+* Lucide Icons
+* Expo Vector Icons
+* Layout responsivo
+
+---
+
+### 🧾 Formulários
+
+* React Hook Form
+* Zod Validation
+* Tipagem automática
+
+---
+
+### API Layer
+
+* Axios
+* Service Layer isolada
+* Hooks com TanStack Query
+
+---
+
+## Arquitetura
+
+Estrutura baseada em **Feature Architecture**:
+
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+ app/            → rotas (expo-router)
+ features/       → módulos isolados
+ services/       → http client e interceptors
+ widgets/
+ shared/
+ │   ├── components/
+ │   ├── hooks/
+ │   ├── providers/
+ │   └── stores/
+ │   └── config/
+ │   └── types/
+ │   └── utils/
+ │   └── theme/
+ │   └── constants/
 
-## Learn more
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Cada feature é independente:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+features/users/
+ ├── api/
+ ├── hooks/
+ ├── screens/
+ ├── schema/
+ ├── store/
+ ├── types/
+ └── index.ts
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## Como rodar o projeto
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 1️⃣ Clonar o repositório
+
+```
+git clone <repo-url>
+cd native
+```
+
+---
+
+### 2️⃣ Instalar dependências
+
+```
+npm install
+```
+
+ou
+
+```
+yarn
+```
+
+---
+
+### 3️⃣ Iniciar o projeto
+
+```
+npm start
+```
+
+Isso abrirá o **Expo Dev Server**.
+
+---
+
+### 4️⃣ Executar em cada plataforma
+
+#### Android
+
+Requer:
+
+* Android Studio instalado
+* Emulator rodando **ou** celular conectado
+
+```
+npm run android
+```
+
+---
+
+#### iOS (MacOS)
+
+Requer:
+
+* Xcode instalado
+
+```
+npm run ios
+```
+
+---
+
+#### Web
+
+```
+npm run web
+```
+
+---
+
+### Rodar no celular físico
+
+1. Instale o **Expo Go**:
+
+   * Android → Play Store
+   * iOS → App Store
+
+2. Execute:
+
+```
+npm start
+```
+
+3. Escaneie o QR Code exibido no terminal.
+
+---
+
+## Feature Generator CLI
+
+O template possui um CLI interno para gerar módulos automaticamente.
+
+### Criar feature
+
+```
+npm run feature users -- --all
+```
+
+Flags:
+
+| Flag      | Descrição            |
+| --------- | -------------------- |
+| `--crud`  | API + hooks TanStack |
+| `--form`  | Form + Zod           |
+| `--store` | Store Zustand        |
+| `--all`   | Gera tudo            |
+
+---
+
+### Listar features
+
+```
+npm run feature:list
+```
+
+---
+
+### Remover feature
+
+```
+npm run feature:delete users
+```
+
+---
+
+## Providers Globais
+
+Centralizados em:
+
+```
+app/shared/providers/
+```
+
+Inclui:
+
+* Theme Provider
+* Query Client Provider
+* App Providers
+
+---
+
+## Scripts Disponíveis
+
+```
+npm start        → inicia o projeto
+npm run android  → abre Android
+npm run ios      → abre iOS
+npm run web      → versão web
+npm run lint     → linting
+npm run feature
+npm run feature:list 
+npm run feature:delete    
+```
+
+---
+
+## Filosofia do Template
+
+* Server State separado do Client State
+* Features isoladas
+* Routing baseado em arquivos
+* Providers centralizados
+* Escalabilidade desde o primeiro commit
+
+Ideal para:
+
+* SaaS Mobile
+* Super Apps
+* MVPs profissionais
+* Apps enterprise
+
+---
+
+## Stack Resumida
+
+* Expo Router
+* TanStack Query
+* Zustand
+* NativeWind
+* React Hook Form
+* Zod
+* Axios
+* TypeScript
