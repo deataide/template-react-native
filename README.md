@@ -1,21 +1,21 @@
 # Expo Native Template
 
-Template moderno para desenvolvimento **React Native + Expo** com arquitetura escalável baseada em **Feature-Driven Design**, preparado para aplicações reais de produção.
+Template profissional para desenvolvimento **React Native + Expo** utilizando uma arquitetura moderna, escalável e preparada para times e projetos reais.
 
-Este projeto foi criado para eliminar boilerplate repetitivo e já entregar uma base **profissional, organizada e performática**.
+Este projeto já nasce organizado com **Feature Architecture**, automações via CLI e documentação pensada inclusive para uso com **IA Agents**.
 
 ---
 
-## Tecnologias
+# Stack Tecnológica
 
-### Core
+## Core
 
-* **Expo SDK 54**
-* **React 19**
-* **React Native 0.81**
-* **Expo Router (File-based routing)**
+* Expo SDK 54
+* React 19
+* React Native 0.81
+* Expo Router (file-based routing)
 
-Compatível com:
+Plataformas suportadas:
 
 * Android
 * iOS
@@ -23,70 +23,73 @@ Compatível com:
 
 ---
 
-### Gerenciamento de Estado
+## Estado da Aplicação
 
-| Tipo de Estado        | Tecnologia     |
-| --------------------- | -------------- |
-| Dados do backend      | TanStack Query |
-| estado local          | Zustand        |
+| Tipo              | Tecnologia     |
+| ----------------- | -------------- |
+| Server State      | TanStack Query |
+| Client State      | Zustand        |
 
-Separação clara entre **Server State** e **Client State**.
+Separação clara entre:
+
+* **dados do backend**
+* **estado local da UI**
+* **configuração global**
 
 ---
 
-### UI & Estilização
+## UI & Design System
 
 * NativeWind (Tailwind CSS)
-* Dark / Light Theme Ready
+* Theme System (Light / Dark)
+* Tokens centralizados
 * Lucide Icons
-* Expo Vector Icons
-* Layout responsivo
-
 ---
 
-### 🧾 Formulários
+## 🧾 Forms & Validação
 
 * React Hook Form
-* Zod Validation
+* Zod
 * Tipagem automática
 
 ---
 
-### API Layer
+## Comunicação HTTP
 
 * Axios
-* Service Layer isolada
-* Hooks com TanStack Query
+* Cliente HTTP centralizado
+* Interceptors globais
+  
+---
+
+# Arquitetura do Projeto
+
+Estrutura pensada para **escala real**.
+
+```bash
+.
+├── app/                # Rotas (Expo Router)
+├── features/           # Módulos isolados
+├── shared/             # Código reutilizável
+├── widgets/            # Componentes compostos de UI
+├── services/           # HTTP, interceptors e integrações externas
+├── assets/             # imagens, fontes, ícones
+├── docs/               # documentação do projeto
+├── scripts/            # CLIs internas
+│
+├── AGENTS.md           # contexto para IA
+├── ARCHITECTURE.md     # documentação arquitetural
+└── README.md
+```
 
 ---
 
-## Arquitetura
+# Features (Domain Driven)
 
-Estrutura baseada em **Feature Architecture**:
+Cada funcionalidade vive isolada:
 
-```
-
- app/            → rotas (expo-router)
- features/       → módulos isolados
- services/       → http client e interceptors
- widgets/
- shared/
- │   ├── components/
- │   ├── hooks/
- │   ├── providers/
- │   └── stores/
- │   └── config/
- │   └── types/
- │   └── utils/
- │   └── theme/
- │   └── constants/
-
-```
-
-Cada feature é independente:
-
-```
-features/users/
+```bash
+features/product/
  ├── api/
  ├── hooks/
  ├── screens/
@@ -95,74 +98,179 @@ features/users/
  ├── types/
  └── index.ts
 ```
+---
+
+# Pasta `shared`
+
+Código reutilizável global.
+
+```bash
+shared/
+ ├── components/   # componentes reutilizáveis
+ ├── config/       # configs globais
+ ├── constants/    # constantes do sistema
+ ├── hooks/        # hooks compartilhados
+ ├── providers/    # providers globais
+ ├── theme/        # tokens e tema Tailwind
+ ├── types/        # tipos globais
+ └── utils/        # helpers
+```
+
+Regra:
+
+ **shared NÃO conhece features**
 
 ---
 
-## Como rodar o projeto
+# Widgets
 
-### 1️⃣ Clonar o repositório
+```bash
+widgets/
+```
 
-```
-git clone <repo-url>
-cd native
-```
+Componentes maiores compostos por múltiplos componentes.
+
+Exemplos:
+
+* Bottom Navigation
+* Header App
+* Layouts
+* Containers
+
+Diferença:
+
+| Tipo              | Uso                     |
+| ----------------- | ----------------------- |
+| shared/components | componente reutilizável |
+| widgets           | bloco de UI completo    |
 
 ---
 
-### 2️⃣ Instalar dependências
+# Services
+
+```bash
+services/
+ ├── http.ts
+ └── interceptors/
+```
+
+Responsável por:
+
+* Cliente Axios
+* Interceptors
+* Auth handling
+* Refresh token
+* Integrações externas
+
+ Features **NUNCA** usam axios direto.
+
+---
+
+# Docs
+
+```bash
+docs/
+```
+
+Documentação viva do projeto:
+
+* padrões internos
+* decisões técnicas
+* guias de desenvolvimento
+
+---
+
+# AI-Ready Structure
+
+Arquivos na raiz:
 
 ```
+AGENTS.md
+ARCHITECTURE.md
+```
+
+Servem para:
+
+* fornecer contexto arquitetural para IA
+* acelerar geração de código
+* padronizar contribuições automáticas
+
+---
+
+# Scripts
+
+```bash
+scripts/
+```
+
+Automação interna do template.
+
+Scripts disponíveis:
+
+| Script         | Função            |
+| -------------- | ----------------- |
+| feature        | cria nova feature |
+| feature:list   | lista features    |
+| feature:delete | remove feature    |
+
+---
+
+# Como Rodar o Projeto
+
+## 1️⃣ Instalar dependências
+
+```bash
 npm install
 ```
 
 ou
 
-```
+```bash
 yarn
 ```
 
 ---
 
-### 3️⃣ Iniciar o projeto
+## 2️⃣ Iniciar servidor Expo
 
-```
+```bash
 npm start
 ```
 
-Isso abrirá o **Expo Dev Server**.
+Abre o Expo Dev Server.
 
 ---
 
-### 4️⃣ Executar em cada plataforma
+## 3️⃣ Executar plataformas
 
-#### Android
+### Android
 
-Requer:
-
-* Android Studio instalado
-* Emulator rodando **ou** celular conectado
-
-```
+```bash
 npm run android
 ```
 
+Requisitos:
+
+* Android Studio
+* Emulator ou dispositivo físico
+
 ---
 
-#### iOS (MacOS)
+### iOS (MacOS)
 
-Requer:
-
-* Xcode instalado
-
-```
+```bash
 npm run ios
 ```
 
+Requisitos:
+
+* Xcode instalado
+
 ---
 
-#### Web
+### Web
 
-```
+```bash
 npm run web
 ```
 
@@ -170,113 +278,65 @@ npm run web
 
 ### Rodar no celular físico
 
-1. Instale o **Expo Go**:
-
-   * Android → Play Store
-   * iOS → App Store
-
+1. Instale **Expo Go**
 2. Execute:
 
-```
+```bash
 npm start
 ```
 
-3. Escaneie o QR Code exibido no terminal.
+3. Escaneie o QR Code.
 
 ---
 
-## Feature Generator CLI
+# 🧩 Feature Generator CLI
 
-O template possui um CLI interno para gerar módulos automaticamente.
+Cria módulos completos automaticamente.
 
-### Criar feature
+## Criar feature
 
-```
+```bash
 npm run feature users -- --all
 ```
 
 Flags:
 
-| Flag      | Descrição            |
-| --------- | -------------------- |
-| `--crud`  | API + hooks TanStack |
-| `--form`  | Form + Zod           |
-| `--store` | Store Zustand        |
-| `--all`   | Gera tudo            |
+| Flag    | Gera                 |
+| ------- | -------------------- |
+| --crud  | API + TanStack Query |
+| --form  | Form + Zod           |
+| --store | Zustand Store        |
+| --all   | tudo                 |
 
 ---
 
-### Listar features
+## Listar features
 
-```
+```bash
 npm run feature:list
 ```
 
 ---
 
-### Remover feature
+## Remover feature
 
-```
+```bash
 npm run feature:delete users
 ```
 
 ---
 
-## Providers Globais
+# Filosofia
 
-Centralizados em:
+Este template aplica padrões usados em aplicações enterprise:
 
-```
-app/shared/providers/
-```
-
-Inclui:
-
-* Theme Provider
-* Query Client Provider
-* App Providers
+* Feature Driven Architecture
+* Server State separado
+* UI State isolado
+* HTTP centralizado
+* Theme System desacoplado
+* Automação por CLI
+* Preparado para IA
 
 ---
 
-## Scripts Disponíveis
-
-```
-npm start        → inicia o projeto
-npm run android  → abre Android
-npm run ios      → abre iOS
-npm run web      → versão web
-npm run lint     → linting
-npm run feature
-npm run feature:list 
-npm run feature:delete    
-```
-
----
-
-## Filosofia do Template
-
-* Server State separado do Client State
-* Features isoladas
-* Routing baseado em arquivos
-* Providers centralizados
-* Escalabilidade desde o primeiro commit
-
-Ideal para:
-
-* SaaS Mobile
-* Super Apps
-* MVPs profissionais
-* Apps enterprise
-
----
-
-## Stack Resumida
-
-* Expo Router
-* TanStack Query
-* Zustand
-* NativeWind
-* React Hook Form
-* Zod
-* Axios
-* TypeScript
