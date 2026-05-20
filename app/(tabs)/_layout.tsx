@@ -4,7 +4,7 @@ import { BottomNav, TabConfig } from "@/widgets/navigation/BottomNav";
 
 const TABS: TabConfig[] = [
   { name: "home", label: "Home", Icon: Home },
-  { name: "profile", label: "Profile", Icon: User },
+  { name: "post", label: "Posts", Icon: User },
 ];
 
 export default function TabsLayout() {
