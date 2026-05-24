@@ -1,6 +1,5 @@
 import { useTheme } from "@/shared/hooks/useTheme";
 import { AppThemeProvider } from "@/shared/providers/ThemeProvider/theme";
-import { env } from '@/shared/config/env'
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -14,11 +13,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export default function RootLayout() {
-  
 const queryClient = new QueryClient();
-  console.log("Running:", env.EXPO_PUBLIC_APP_ENV);
 
+export default function RootLayout() {
   const [loaded, error] = useFonts({
     Inter_400Regular,
     Inter_500Medium,

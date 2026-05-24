@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { TextInput } from "react-native"
+import { useTheme } from "@/shared/hooks/useTheme"
 
 interface StyledInputProps {
   value: string
@@ -23,6 +24,7 @@ export function StyledInput({
   numberOfLines,
 }: StyledInputProps) {
   const [focused, setFocused] = useState(false)
+  const { theme } = useTheme()
 
   const borderColor = hasError
     ? 'border-error bg-error/5'
@@ -35,7 +37,7 @@ export function StyledInput({
       value={value}
       onChangeText={onChange}
       placeholder={placeholder}
-      placeholderTextColor="#9ca3af"
+      placeholderTextColor={theme.colors.text.muted}
       keyboardType={keyboardType}
       autoCapitalize={autoCapitalize}
       multiline={multiline}

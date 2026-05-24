@@ -1,6 +1,8 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import type { LucideIcon } from "lucide-react-native";
 import { Pressable, View } from "react-native";
+import { COLORS } from "@/shared/constants/colors";
+import { useTheme } from "@/shared/hooks/useTheme";
 
 export type TabConfig = {
   name: string;
@@ -13,6 +15,8 @@ type BottomNavProps = BottomTabBarProps & {
 };
 
 export function BottomNav({ state, navigation, tabs }: BottomNavProps) {
+  const { theme } = useTheme();
+
   return (
     <View
       className="absolute bottom-6 left-0 right-0 items-center"
@@ -34,14 +38,14 @@ export function BottomNav({ state, navigation, tabs }: BottomNavProps) {
                 className="w-10 h-[30px] rounded-full items-center justify-center"
                 style={{
                   backgroundColor: active
-                    ? "rgba(255,255,255,0.13)"
+                    ? theme.colors.overlay
                     : "transparent",
                 }}
               >
                 <Icon
                   size={18}
                   strokeWidth={active ? 2.4 : 1.6}
-                  color={active ? "#FFFFFF" : "rgba(255,255,255,0.40)"}
+                  color={active ? COLORS.dark.text.primary : COLORS.dark.text.secondary}
                 />
               </View>
             </Pressable>

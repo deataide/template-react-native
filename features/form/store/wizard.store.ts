@@ -33,7 +33,6 @@ export const useWizardStore = create<WizardStoreState>()(
       name: '@wizard_form',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        formData: state.formData,
         currentStep: state.currentStep,
       }),
     }
