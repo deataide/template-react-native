@@ -1,6 +1,6 @@
-import { useTheme } from "@/shared/hooks/useTheme";
-import { useI18n } from "@/shared/hooks/useI18n";
-import { AppThemeProvider } from "@/shared/providers/ThemeProvider/theme";
+import { useTheme } from "@shared/hooks/useTheme";
+import { useI18n } from "@shared/hooks/useI18n";
+import { AppProviders } from "@shared/providers/AppProviders";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -10,11 +10,7 @@ import {
 } from "@expo-google-fonts/inter";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -31,13 +27,9 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
-    <SafeAreaProvider>
-      <AppThemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <LayoutContent />
-        </QueryClientProvider>
-      </AppThemeProvider>
-    </SafeAreaProvider>
+    <AppProviders>
+      <LayoutContent />
+    </AppProviders>
   );
 }
 
@@ -54,6 +46,8 @@ function LayoutContent() {
         contentStyle: { backgroundColor: theme.colors.background },
       }}
     >
+      <Stack.Screen name="(public)" />
+      <Stack.Screen name="(app)" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
         name="+not-found"

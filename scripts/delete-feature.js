@@ -21,8 +21,7 @@ if (!featureName) {
 // -----------------------------
 // root detect
 // -----------------------------
-const hasSrc = fs.existsSync(path.join(process.cwd(), 'src'))
-const ROOT = hasSrc ? path.join(process.cwd(), 'src') : process.cwd()
+const ROOT = path.join(process.cwd(), 'src')
 
 const FEATURE_DIR = path.join(ROOT, 'features', featureName)
 const ROUTE_DIR   = path.join(process.cwd(), 'app', '(app)', featureName)
@@ -49,7 +48,7 @@ function deleteDir(dir) {
 function run() {
   const deleted = []
 
-  if (deleteDir(FEATURE_DIR)) deleted.push(`features/${featureName}/`)
+  if (deleteDir(FEATURE_DIR)) deleted.push(`src/features/${featureName}/`)
   if (deleteDir(ROUTE_DIR))   deleted.push(`app/(app)/${featureName}/`)
 
   console.log('')

@@ -15,10 +15,10 @@ O projeto utiliza **Feature Driven Architecture** baseada em:
 ```
 app/        → navegação (Expo Router)
 assets/     → assets estáticos
-features/   → domínios da aplicação
-shared/     → código reutilizável e design system
-widgets/    → componentes compostos de UI (BottomNav, Header, Sidebar)
-services/   → integrações externas (API clients, SDKs)
+src/features/ → domínios da aplicação
+src/shared/   → código reutilizável e design system
+src/widgets/  → componentes compostos de UI (BottomNav, Header, Sidebar)
+src/services/ → integrações externas (API clients, SDKs)
 scripts/    → scripts de automação (create-feature, etc)
 docs/       → documentação
 ```
@@ -27,12 +27,12 @@ docs/       → documentação
 
 ## Features
 
-Cada pasta dentro de `features/` representa um domínio isolado.
+Cada pasta dentro de `src/features/` representa um domínio isolado.
 
 Exemplo:
 
 ```
-features/
+src/features/
   supplier/
   product/
   order/
@@ -57,14 +57,14 @@ supplier/
 └── index.ts      → barrel export
 ```
 
-> Se um estado do `store/` precisar ser compartilhado entre features, mover para `shared/stores/`.
+> Se um estado do `store/` precisar ser compartilhado entre features, mover para `src/shared/stores/`.
 
 ---
 
 ## Shared Layer
 
 ```
-shared/
+src/shared/
 ├── components/   → átomos reutilizáveis (Button, Input, Card, Badge...)
 ├── hooks/        → hooks genéricos (useDebounce, useTheme...)
 ├── stores/       → estado global (theme.store, auth.store...)
@@ -82,16 +82,16 @@ shared/
 ## Widgets Layer
 
 ```
-widgets/
+src/widgets/
 ├── navigation/   → BottomNav, TabBar
 ├── header/       → AppHeader, SearchBar
 └── sidebar/      → Drawer, Menu
 ```
 
 > Diferença entre camadas de UI:
-> - `shared/components/` → átomos (Button, Input)
-> - `widgets/` → organismos compostos (BottomNav, Sidebar)
-> - `features/X/components/` → UI exclusiva da feature X
+> - `src/shared/components/` → átomos (Button, Input)
+> - `src/widgets/` → organismos compostos (BottomNav, Sidebar)
+> - `src/features/X/components/` → UI exclusiva da feature X
 
 ---
 
@@ -104,13 +104,13 @@ Features **não devem** importar outras features.
 ❌ errado
 
 ```
-features/order → importa features/supplier
+src/features/order → importa src/features/supplier
 ```
 
 ✅ correto
 
 ```
-features/order → shared/  (abstrai a dependência)
+src/features/order → src/shared/  (abstrai a dependência)
 ```
 
 ---
@@ -160,4 +160,3 @@ Nunca registrar rotas manualmente.
 - onboarding rápido para novos devs
 - baixo acoplamento entre domínios
 - fácil manutenção e testabilidade
-- pronto para times grandes

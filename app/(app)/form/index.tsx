@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router'
-import { useWizardStore } from '@/features/form/store/wizard.store'
+import { useWizardStore } from '@features/form/store/wizard.store'
 
 export default function Form() {
   const currentStep = useWizardStore((state) => state.currentStep)

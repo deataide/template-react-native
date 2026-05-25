@@ -3,9 +3,6 @@
 const fs = require('fs')
 const path = require('path')
 
-// -----------------------------
-// args
-// -----------------------------
 const args = process.argv.slice(2)
 const featureName = args[0]
 
@@ -22,55 +19,42 @@ if (!featureName) {
 }
 
 const flags = {
-  crud:  args.includes('--crud'),
-  form:  args.includes('--form'),
+  crud: args.includes('--crud'),
+  form: args.includes('--form'),
   store: args.includes('--store'),
-  all:   args.includes('--all'),
+  all: args.includes('--all'),
 }
 
 if (flags.all) {
-  flags.crud  = true
-  flags.form  = true
+  flags.crud = true
+  flags.form = true
   flags.store = true
 }
 
 const pascal = featureName.charAt(0).toUpperCase() + featureName.slice(1)
-const camel  = featureName.charAt(0).toLowerCase() + featureName.slice(1)
+const camel = featureName.charAt(0).toLowerCase() + featureName.slice(1)
 
-// -----------------------------
-// root detect
-// -----------------------------
-const hasSrc = fs.existsSync(path.join(process.cwd(), 'src'))
-const ROOT = hasSrc ? path.join(process.cwd(), 'src') : process.cwd()
-
-// app/ sempre na raiz do projeto (Expo Router)
-const APP_ROOT    = process.cwd()
+const ROOT = path.join(process.cwd(), 'src')
+const APP_ROOT = process.cwd()
 const FEATURE_DIR = path.join(ROOT, 'features', featureName)
-const ROUTE_DIR   = path.join(APP_ROOT, 'app', '(app)', featureName)
+const ROUTE_DIR = path.join(APP_ROOT, 'app', '(app)', featureName)
 
 if (fs.existsSync(FEATURE_DIR)) {
   console.error(`❌ Feature "${featureName}" já existe.`)
   process.exit(1)
 }
 
-// -----------------------------
-// helper
-// -----------------------------
+fs.mkdirSync(ROOT, { recursive: true })
+
 function write(filePath, content) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, content)
 }
 
-// -----------------------------
-// dirs base
-// -----------------------------
 ;['api', 'hooks', 'screens', 'components', 'types', 'schema', 'store'].forEach(
   (dir) => fs.mkdirSync(path.join(FEATURE_DIR, dir), { recursive: true })
 )
 
-// -----------------------------
-// TYPES
-// -----------------------------
 write(
   path.join(FEATURE_DIR, `types/${featureName}.types.ts`),
   `export interface ${pascal} {
@@ -85,13 +69,10 @@ export interface ${pascal}Payload {
 `
 )
 
-// -----------------------------
-// API
-// -----------------------------
 if (flags.crud) {
   write(
     path.join(FEATURE_DIR, `api/${featureName}.api.ts`),
-    `import { http } from '@/services/http'
+    `import { http } from '@services/http/client'
 import type { ${pascal}, ${pascal}Payload } from '../types/${featureName}.types'
 
 export const ${camel}Api = {
@@ -112,30 +93,33 @@ export const ${camel}Api = {
 }
 `
   )
-}
 
-// -----------------------------
-// HOOKS (TanStack Query)
-// -----------------------------
-write(
-  path.join(FEATURE_DIR, `hooks/use${pascal}.ts`),
-  flags.crud
-    ? `import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+  write(
+    path.join(FEATURE_DIR, `hooks/${featureName}.keys.ts`),
+    `export const ${camel}Keys = {
+  all: ['${featureName}s'] as const,
+  detail: (id: string) => [...${camel}Keys.all, id] as const,
+}
+`
+  )
+
+  write(
+    path.join(FEATURE_DIR, `hooks/use${pascal}.ts`),
+    `import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ${camel}Api } from '../api/${featureName}.api'
 import type { ${pascal}Payload } from '../types/${featureName}.types'
-
-const KEY = ['${featureName}s'] as const
+import { ${camel}Keys } from './${featureName}.keys'
 
 export function use${pascal}s() {
   return useQuery({
-    queryKey: KEY,
+    queryKey: ${camel}Keys.all,
     queryFn: ${camel}Api.getAll,
   })
 }
 
 export function use${pascal}(id: string) {
   return useQuery({
-    queryKey: [...KEY, id],
+    queryKey: ${camel}Keys.detail(id),
     queryFn: () => ${camel}Api.getById(id),
     enabled: !!id,
   })
@@ -145,7 +129,7 @@ export function useCreate${pascal}() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: ${pascal}Payload) => ${camel}Api.create(data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ${camel}Keys.all }),
   })
 }
 
@@ -154,7 +138,7 @@ export function useUpdate${pascal}() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<${pascal}Payload> }) =>
       ${camel}Api.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ${camel}Keys.all }),
   })
 }
 
@@ -162,17 +146,19 @@ export function useDelete${pascal}() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => ${camel}Api.remove(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ${camel}Keys.all }),
   })
 }
 `
-    : `// Adicione --crud para gerar hooks com TanStack Query
+  )
+} else {
+  write(
+    path.join(FEATURE_DIR, `hooks/use${pascal}.ts`),
+    `// Adicione --crud para gerar hooks com TanStack Query
 `
-)
+  )
+}
 
-// -----------------------------
-// STORE (Zustand)
-// -----------------------------
 if (flags.store) {
   write(
     path.join(FEATURE_DIR, `store/${featureName}.store.ts`),
@@ -194,9 +180,6 @@ export const use${pascal}Store = create<${pascal}StoreState>((set) => ({
   )
 }
 
-// -----------------------------
-// SCHEMA (Zod)
-// -----------------------------
 if (flags.form) {
   write(
     path.join(FEATURE_DIR, `schema/${featureName}.schema.ts`),
@@ -211,19 +194,16 @@ export type ${pascal}FormData = z.infer<typeof ${camel}Schema>
   )
 }
 
-// -----------------------------
-// SCREENS
-// -----------------------------
 write(
   path.join(FEATURE_DIR, `screens/${pascal}ListScreen.tsx`),
   `import { View, Text } from 'react-native'
 ${flags.crud ? `import { use${pascal}s } from '../hooks/use${pascal}'` : ''}
 
 export function ${pascal}ListScreen() {
-  ${flags.crud ? `const { data, isLoading, isError, refetch } = use${pascal}s()
+  ${flags.crud ? `const { isLoading, isError } = use${pascal}s()
 
   if (isLoading) return <View className="flex-1 items-center justify-center"><Text className="text-text-primary">Carregando...</Text></View>
-  if (isError)   return <View className="flex-1 items-center justify-center"><Text className="text-error">Erro ao carregar.</Text></View>` : ''}
+  if (isError) return <View className="flex-1 items-center justify-center"><Text className="text-error">Erro ao carregar.</Text></View>` : ''}
 
   return (
     <View className="flex-1 bg-background p-4">
@@ -258,7 +238,7 @@ import { ${camel}Schema, type ${pascal}FormData } from '../schema/${featureName}
 ${flags.crud ? `import { useCreate${pascal} } from '../hooks/use${pascal}'` : ''}
 
 export function ${pascal}FormScreen() {
-  ${flags.crud ? `const { mutate, isPending } = useCreate${pascal}()` : ''}
+  ${flags.crud ? `const { mutate } = useCreate${pascal}()` : ''}
   const { handleSubmit } = useForm<${pascal}FormData>({
     resolver: zodResolver(${camel}Schema),
   })
@@ -275,12 +255,9 @@ export function ${pascal}FormScreen() {
   )
 }
 
-// -----------------------------
-// ROUTES (Expo Router)
-// -----------------------------
 write(
   path.join(ROUTE_DIR, 'index.tsx'),
-  `import { ${pascal}ListScreen } from '@/features/${featureName}'
+  `import { ${pascal}ListScreen } from '@features/${featureName}'
 
 export default function Screen() {
   return <${pascal}ListScreen />
@@ -290,7 +267,7 @@ export default function Screen() {
 
 write(
   path.join(ROUTE_DIR, '[id].tsx'),
-  `import { ${pascal}DetailScreen } from '@/features/${featureName}'
+  `import { ${pascal}DetailScreen } from '@features/${featureName}'
 
 export default function Screen() {
   return <${pascal}DetailScreen />
@@ -301,7 +278,7 @@ export default function Screen() {
 if (flags.form) {
   write(
     path.join(ROUTE_DIR, 'create.tsx'),
-    `import { ${pascal}FormScreen } from '@/features/${featureName}'
+    `import { ${pascal}FormScreen } from '@features/${featureName}'
 
 export default function Screen() {
   return <${pascal}FormScreen />
@@ -310,40 +287,36 @@ export default function Screen() {
   )
 }
 
-// -----------------------------
-// BARREL
-// -----------------------------
 const barrelExports = [
   `export * from './screens/${pascal}ListScreen'`,
   `export * from './screens/${pascal}DetailScreen'`,
-  flags.form  ? `export * from './screens/${pascal}FormScreen'`  : null,
-  flags.crud  ? `export * from './api/${featureName}.api'`       : null,
+  flags.form ? `export * from './screens/${pascal}FormScreen'` : null,
+  flags.crud ? `export * from './api/${featureName}.api'` : null,
+  flags.crud ? `export * from './hooks/${featureName}.keys'` : null,
   `export * from './hooks/use${pascal}'`,
   `export * from './types/${featureName}.types'`,
-  flags.form  ? `export * from './schema/${featureName}.schema'` : null,
-  flags.store ? `export * from './store/${featureName}.store'`   : null,
+  flags.form ? `export * from './schema/${featureName}.schema'` : null,
+  flags.store ? `export * from './store/${featureName}.store'` : null,
 ]
   .filter(Boolean)
   .join('\n')
 
 write(path.join(FEATURE_DIR, 'index.ts'), barrelExports + '\n')
 
-// -----------------------------
-// summary
-// -----------------------------
 console.log('')
 console.log(`✅ Feature "${featureName}" criada com sucesso`)
 console.log('')
 console.log('Arquivos gerados:')
-console.log(`  features/${featureName}/types/${featureName}.types.ts`)
-if (flags.crud)  console.log(`  features/${featureName}/api/${featureName}.api.ts`)
-console.log(`  features/${featureName}/hooks/use${pascal}.ts`)
-if (flags.store) console.log(`  features/${featureName}/store/${featureName}.store.ts`)
-if (flags.form)  console.log(`  features/${featureName}/schema/${featureName}.schema.ts`)
-console.log(`  features/${featureName}/screens/${pascal}ListScreen.tsx`)
-console.log(`  features/${featureName}/screens/${pascal}DetailScreen.tsx`)
-if (flags.form)  console.log(`  features/${featureName}/screens/${pascal}FormScreen.tsx`)
+console.log(`  src/features/${featureName}/types/${featureName}.types.ts`)
+if (flags.crud) console.log(`  src/features/${featureName}/api/${featureName}.api.ts`)
+if (flags.crud) console.log(`  src/features/${featureName}/hooks/${featureName}.keys.ts`)
+console.log(`  src/features/${featureName}/hooks/use${pascal}.ts`)
+if (flags.store) console.log(`  src/features/${featureName}/store/${featureName}.store.ts`)
+if (flags.form) console.log(`  src/features/${featureName}/schema/${featureName}.schema.ts`)
+console.log(`  src/features/${featureName}/screens/${pascal}ListScreen.tsx`)
+console.log(`  src/features/${featureName}/screens/${pascal}DetailScreen.tsx`)
+if (flags.form) console.log(`  src/features/${featureName}/screens/${pascal}FormScreen.tsx`)
 console.log(`  app/(app)/${featureName}/index.tsx`)
 console.log(`  app/(app)/${featureName}/[id].tsx`)
-if (flags.form)  console.log(`  app/(app)/${featureName}/create.tsx`)
+if (flags.form) console.log(`  app/(app)/${featureName}/create.tsx`)
 console.log('')

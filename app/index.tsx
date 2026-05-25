@@ -1,15 +1,13 @@
-import Button from "@/shared/components/ui/Button";
-import { useRouter } from "expo-router";
-import React from "react";
+import { useAuthSession } from "@shared/hooks/useAuthSession";
+import { Redirect } from "expo-router";
 import { View } from "react-native";
 
-const Initial: React.FC = () => {
-  const router = useRouter();
-  return (
-    <View className="flex-1 items-center justify-center bg-background">
-      <Button title="Go to Home" onPress={() => router.push("/home")} />
-    </View>
-  );
-};
+export default function Initial() {
+  const { hydrated, isAuthenticated } = useAuthSession();
 
-export default Initial;
+  if (!hydrated) return <View className="flex-1 bg-background" />;
+
+  if (!isAuthenticated) return <Redirect href="/(public)/login" />;
+
+  return <Redirect href="/home" />;
+}

@@ -8,7 +8,7 @@ Este documento define como agentes de IA devem trabalhar neste projeto.
 
 O projeto segue **Feature Driven Architecture** com:
 
-- Expo Router para navegação baseada em arquivos
+- Expo Router para navegação baseada em arquivos (`app/`)
 - TanStack Query para server state
 - Zustand para estado global e local persistente
 - React Hook Form + Zod para formulários e validação
@@ -26,10 +26,10 @@ Toda implementação deve respeitar:
 
 Antes de criar qualquer funcionalidade:
 
-1. verificar se a feature existe em `features/`
+1. verificar se a feature existe em `src/features/`
 2. caso não exista → criar usando o script
 
-```
+```bash
 node scripts/create-feature <feature>
 ```
 
@@ -41,51 +41,51 @@ Nunca criar pastas ou arquivos de feature manualmente.
 
 ### API
 
-```
-features/<feature>/api/
+```text
+src/features/<feature>/api/
 ```
 
 ### Queries e Mutations
 
-```
-features/<feature>/hooks/
+```text
+src/features/<feature>/hooks/
 ```
 
 > Usar TanStack Query. Nunca chamar a API diretamente na tela.
 
 ### Estado local da feature
 
-```
-features/<feature>/store/
+```text
+src/features/<feature>/store/
 ```
 
-> Zustand. Se o estado precisar ser compartilhado entre features, mover para `shared/stores/`.
+> Zustand. Se o estado precisar ser compartilhado entre features, mover para `src/shared/stores/`.
 
 ### Validação
 
-```
-features/<feature>/schema/
+```text
+src/features/<feature>/schema/
 ```
 
-> Zod. Schemas compartilhados entre features vão em `shared/schemas/`.
+> Zod. Schemas compartilhados entre features vão em `src/shared/schemas/`.
 
 ### Componentes exclusivos da feature
 
-```
-features/<feature>/components/
+```text
+src/features/<feature>/components/
 ```
 
 ### Telas
 
-```
-features/<feature>/screens/
+```text
+src/features/<feature>/screens/
 ```
 
 ### UI reutilizável entre features
 
-```
-shared/components/   → átomos (Button, Input, Card)
-widgets/             → organismos compostos (BottomNav, Header)
+```text
+src/shared/components/   → átomos (Button, Input, Card)
+src/widgets/             → organismos compostos (BottomNav, Header)
 ```
 
 ---
@@ -94,7 +94,7 @@ widgets/             → organismos compostos (BottomNav, Header)
 
 A IA deve sempre seguir:
 
-```
+```text
 Screen
   ↓
 Hook (TanStack Query)
@@ -122,23 +122,31 @@ A IA deve escolher a ferramenta correta:
 
 ---
 
-## Regra Nº5 — Imports
+## Regra Nº5 — Imports e Aliases
+
+Aliases oficiais:
+
+- `@app/*` → `app/*`
+- `@features/*` → `src/features/*`
+- `@shared/*` → `src/shared/*`
+- `@widgets/*` → `src/widgets/*`
+- `@services/*` → `src/services/*`
 
 ✅ permitido:
 
-```
-feature → shared/
-feature → services/
-feature → widgets/
+```text
+feature → @shared
+feature → @services
+feature → @widgets
 ```
 
 ❌ proibido:
 
-```
+```text
 feature → outra feature
 ```
 
-Se duas features precisam compartilhar algo, extrair para `shared/`.
+Se duas features precisam compartilhar algo, extrair para `src/shared/`.
 
 ---
 
@@ -148,8 +156,8 @@ Preferir:
 
 - componentes pequenos e com responsabilidade única
 - reutilização dentro da própria feature
-- extrair para `shared/components/` apenas se reutilizado em múltiplas features
-- extrair para `widgets/` se for um organismo composto (menu, navbar, header)
+- extrair para `src/shared/components/` apenas se reutilizado em múltiplas features
+- extrair para `src/widgets/` se for um organismo composto (menu, navbar, header)
 
 ---
 
@@ -159,7 +167,7 @@ Nunca registrar rotas manualmente.
 
 Rotas são geradas automaticamente pelo Expo Router a partir dos arquivos em:
 
-```
+```text
 app/(tabs)/
 app/(app)/
 app/(public)/
@@ -172,7 +180,7 @@ app/(public)/
 - Usar classes NativeWind (`className=`) para estilo
 - Cores via CSS vars (`bg-background`, `text-text-primary`, `border-border`)
 - Nunca usar cores hardcoded nos componentes — usar tokens do design system
-- Cores de ícones (que não aceitam `className`) → importar de `COLORS` em `shared/theme/colors`
+- Cores de ícones (que não aceitam `className`) → importar `COLORS` de `src/shared/constants/colors`
 
 ---
 
@@ -181,6 +189,18 @@ app/(public)/
 Se código repetitivo aparecer entre features:
 
 ➡️ evoluir o script `create-feature` para gerar esse código automaticamente.
+
+---
+
+## Regra Nº10 — RNRepo
+
+- Projeto usa `@rnrepo/expo-config-plugin` para consumir artefatos nativos prebuilt.
+- Em caso de libs com patch nativo (Android/iOS), usar `rnrepo.config.json` com `denyList`.
+- Para desabilitar RNRepo temporariamente:
+
+```bash
+DISABLE_RNREPO=1 <comando-de-build>
+```
 
 ---
 

@@ -12,8 +12,7 @@ const verbose = args.includes('--verbose')
 // -----------------------------
 // root detect
 // -----------------------------
-const hasSrc = fs.existsSync(path.join(process.cwd(), 'src'))
-const ROOT = hasSrc ? path.join(process.cwd(), 'src') : process.cwd()
+const ROOT = path.join(process.cwd(), 'src')
 const FEATURES_DIR = path.join(ROOT, 'features')
 
 if (!fs.existsSync(FEATURES_DIR)) {

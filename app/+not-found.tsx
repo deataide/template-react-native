@@ -1,7 +1,7 @@
 import { Link, Stack } from "expo-router";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useI18n } from "@/shared/hooks/useI18n";
+import { useI18n } from "@shared/hooks/useI18n";
 
 export default function NotFoundScreen() {
   const { t } = useI18n();

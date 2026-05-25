@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { Home, User } from "lucide-react-native";
-import { BottomNav, TabConfig } from "@/widgets/navigation/BottomNav";
+import { BottomNav, TabConfig } from "@widgets/navigation/BottomNav";
 
 const TABS: TabConfig[] = [
   { name: "home", label: "Home", Icon: Home },

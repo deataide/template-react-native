@@ -39,7 +39,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "@rnrepo/expo-config-plugin"
     ],
     "experiments": {
       "typedRoutes": true,

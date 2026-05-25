@@ -3,8 +3,14 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "strict": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@app/*": ["app/*"],
+      "@features/*": ["src/features/*"],
+      "@shared/*": ["src/shared/*"],
+      "@widgets/*": ["src/widgets/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "include": [
