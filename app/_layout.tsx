@@ -1,4 +1,5 @@
 import { useTheme } from "@/shared/hooks/useTheme";
+import { useI18n } from "@/shared/hooks/useI18n";
 import { AppThemeProvider } from "@/shared/providers/ThemeProvider/theme";
 import {
   Inter_400Regular,
@@ -43,6 +44,7 @@ export default function RootLayout() {
 
 function LayoutContent() {
   const { theme } = useTheme();
+  const { t } = useI18n();
 
   return (
     <Stack
@@ -55,7 +57,7 @@ function LayoutContent() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
         name="+not-found"
-        options={{ title: "Página não encontrada" }}
+        options={{ title: t.app.notFoundTitle }}
       />
     </Stack>
   );
