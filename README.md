@@ -77,8 +77,8 @@ Estrutura pensada para **escala real**.
 ├── docs/               # documentação do projeto
 ├── scripts/            # CLIs internas
 │
-├── AGENTS.md           # contexto para IA
-├── ARCHITECTURE.md     # documentação arquitetural
+├── agents.md          # contexto para IA
+├── architecture.md     # documentação arquitetural
 └── README.md
 ```
 
@@ -185,8 +185,8 @@ Documentação viva do projeto:
 Arquivos na raiz:
 
 ```
-AGENTS.md
-ARCHITECTURE.md
+agents.md
+architecture.md
 ```
 
 Servem para:
@@ -340,3 +340,8 @@ Este template aplica padrões usados em aplicações enterprise:
 
 ---
 
+# CI
+
+Guia do pipeline de qualidade:
+
+- `docs/ci-quality.md`

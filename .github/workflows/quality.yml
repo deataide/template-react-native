@@ -1,0 +1,138 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      scripts: ${{ steps.filter.outputs.scripts }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filter paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            app:
+              - 'app/**'
+              - 'src/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.json'
+              - 'babel.config.js'
+              - 'metro.config.cjs'
+              - 'jest.config.js'
+              - '.github/workflows/quality.yml'
+            scripts:
+              - 'scripts/**'
+              - 'jest.scripts.config.js'
+              - '.github/workflows/quality.yml'
+            e2e:
+              - 'e2e/**'
+              - '.detoxrc*'
+              - 'detox.config.*'
+              - 'package.json'
+
+  app-quality:
+    name: App Quality
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (includes architecture checks)
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test -- --runInBand
+
+      - name: Expo doctor
+        run: npx expo-doctor
+
+  script-quality:
+    name: Script Quality
+    needs: changes
+    if: needs.changes.outputs.scripts == 'true' || needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Script tests
+        run: npm run test:scripts
+
+  e2e-smoke:
+    name: E2E Smoke
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true' || needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run smoke E2E if configured
+        run: |
+          HAS_E2E_DIR="false"
+          HAS_E2E_SCRIPT="false"
+
+          if [ -d "e2e" ]; then
+            HAS_E2E_DIR="true"
+          fi
+
+          if npm pkg get scripts.test:e2e | grep -qv "null"; then
+            HAS_E2E_SCRIPT="true"
+          fi
+
+          if [ "$HAS_E2E_DIR" = "true" ] && [ "$HAS_E2E_SCRIPT" = "true" ]; then
+            npm run test:e2e -- --grep @smoke
+          else
+            echo "E2E smoke skipped: missing e2e directory or test:e2e script"
+          fi
